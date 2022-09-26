@@ -1,48 +1,51 @@
-from re import L
 from nltk import ngrams
 import nltk
-from nltk.corpus import brown
-from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from nltk.tokenize import RegexpTokenizer
 import matplotlib.pyplot as plt
-# typeofclass = int(
-#     input("to use word based classification use 1, for character based one use 2"))
-# lang = input("enter en for english corpus, ar for the arabic one")
-
-# if lang == "en":
-#     lng = "english"
-# else:
-#     lng = "arabic"
-tokenizer = RegexpTokenizer(r'\w+[^a-zA-Z]')
-en_stopwords = stopwords.words("english")
-nltk.download("punkt")
-nltk.download('brown')
-nltk.download('stopwords')
-
-# en_corps = """Hello my name is madjid and i would like to try ngrams with zipf law classification,
-# and i would like to know how much this will produce and how much this will be fun"""
-# %%
-# class by word tokenization
-en_corps = brown.words()
-en_corps = en_corps[:4000]
-en_corps = word_tokenize(" ".join(en_corps))
-en_corps = tokenizer.tokenize(" ".join(en_corps))
-en_corps
-# n = int(input("Enter the number of ngrams"))
-en_corps = [w for w in en_corps if not w.lower() in en_stopwords]
-en_corps = [c for w in en_corps for c in w]
+import json
+# types of params
+typeofclass = 2
+lang = "en"
 n = 2
-n_grams = ngrams(en_corps, n)
 
-# word_fd = nltk.FreqDist(en_corps)
-ngram_fd = nltk.FreqDist(ngrams(en_corps, n))
+en_corpus = """
+Despite its widespread lack of familiarity, AI is a technology that is transforming every walk of life. It is a wide-ranging tool that enables people to rethink how we integrate information, analyze data, and use the resulting insights to improve decisionmaking. Our hope through this comprehensive overview is to explain AI to an audience of policymakers, opinion leaders, and interested observers, and demonstrate how AI already is altering the world and raising important questions for society, the economy, and governance.
+
+In this paper, we discuss novel applications in finance, national security, health care, criminal justice, transportation, and smart cities, and address issues such as data access problems, algorithmic bias, AI ethics and transparency, and legal liability for AI decisions. We contrast the regulatory approaches of the U.S. and European Union, and close by making a number of recommendations for getting the most out of AI while still protecting important human values.
+"""
+ar_corpus = """
+قال الرئيس التركي رجب طيب أردوغان إن اليونان ستدفع ثمنا باهظا لدورها في -ما سماها- حياكة المؤامرات على تركيا.
+وأكد أردوغان أن بلاده لن تتوانى عن الدفاع عن حقوقها ومصالحها بجميع الوسائل المتاحة، وأن ما وصفها بالحشود العسكرية الأجنبية ذات المظهر الاحتلالي المنتشرة في أنحاء اليونان كافة، خطر على اليونانيين وقد تحولها إلى مستنقع، حسب تعبيره.
+وأضاف "في حين نبذل جهودا صادقة من أجل إنهاء الحروب والأزمات والتوترات في العالم، نتابع بدقة سياسات جارتنا اليونان التي تفوح منها رائحة الاستفزاز والتحرش".
+وجدد الرئيس التركي التأكيد على أنه لا يمكن لليونان أن تضاهي قوة تركيا لا سياسيا ولا اقتصاديا، مشيرا إلى أن "النية الحقيقية للذين يحرضون السياسيين اليونانيين ضدنا هي إعاقة برنامجنا لبناء تركيا عظيمة وقوية، ولكن هذه لعبة خطيرة بالنسبة للسياسيين اليونانيين والدولة اليونانية والشعب اليوناني ومن يستخدمهم كدمى".
+"""
+typeofclass = int(
+    input("to use word based classification use 1, for character based one use 2: "))
+lang = input("enter en for english corpus, ar for the arabic one: ")
+
+if lang == "en":
+    corpus = en_corpus
+else:
+    corpus = ar_corpus
+
+corpus = word_tokenize(corpus)
+
+n = int(input("Enter the number of ngrams: "))
+if typeofclass == 2:
+    corpus = [c for w in corpus for c in w]
+n_grams = ngrams(corpus, n)
+
+ngram_fd = nltk.FreqDist(ngrams(corpus, n))
 
 
 y = sorted(ngram_fd.values(), reverse=True)
 x = [i for i in range(len(y))]
+
 plt.loglog(x, y)
 plt.xlabel('rank(f)', fontsize=14, fontweight='bold')
 plt.ylabel('frequency(r)', fontsize=14, fontweight='bold')
 plt.grid(True)
 plt.show()
+f = open("classement.txt", "a")
+f.write(json.dumps(ngram_fd.most_common()))
+f.close()
