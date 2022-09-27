@@ -3,6 +3,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 import matplotlib.pyplot as plt
 import json
+
 # types of params
 typeofclass = 2
 lang = "en"
