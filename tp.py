@@ -1,4 +1,5 @@
 # %%
+import collections
 from string import punctuation
 from nltk import ngrams
 from nltk import word_tokenize, RegexpTokenizer
@@ -33,7 +34,6 @@ stoplist = set(stopwords + list(punctuation))
 
 
 def preprocess_text(text: str):
-    # re_tokenizer = RegexpTokenizer(r'\w[^a-zA-Z]')
     tokens = [token for token in nltk.word_tokenize(
         text) if token.lower() not in stoplist]
     return tokens
@@ -82,7 +82,18 @@ for crp_ng in corpus_ngrams:
                 crp_gcount += crp_count
 
         frq_words.at[index, f] = crp_gcount
-print(frq_words)
 # %%
 frq_words.to_csv("ngrams.csv")
+# %%
+for f in filesids:
+    tokens = {t[f]: i for i, t in frq_words.iterrows()}
+    tokens = collections.OrderedDict(sorted(tokens.items(), reverse=True))
+    # sortedx = collections.OrderedDict(sorted(tokens.items(), reverse=True))
+    x = [v for v in range(len(tokens.items()))]
+    y = [k for k, _ in tokens.items()]
+    plt.plot(x, y)
+    plt.xlabel("Words")
+    plt.ylabel("frequency")
+plt.show()
+
 # %%
