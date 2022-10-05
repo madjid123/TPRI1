@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 import nltk
 from nltk.tokenize import word_tokenize
 import matplotlib.pyplot as plt
+from nltk.stem import PorterStemmer
 import json
 import os
 from nltk.corpus.reader.plaintext import PlaintextCorpusReader
@@ -16,7 +17,7 @@ import pandas as pd
 
 typeofclass = 1
 lang = "en"
-n = 1
+n = 2
 c_path = "./corpora"
 c_path = os.path.abspath(c_path)
 # typeofclass = int(
@@ -32,32 +33,41 @@ stopwords = stopwords.words("english")
 
 stoplist = set(stopwords + list(punctuation))
 
+porter = PorterStemmer()
+
 
 def preprocess_text(text: str):
     tokens = [token for token in nltk.word_tokenize(
-        text) if token.lower() not in stoplist]
+        text) if token.lower() not in stoplist and not token.lower().isdigit()]
+    tokens = [porter.stem(w) for w in tokens]
     return tokens
 
 
 corpus_ngrams = []
 corpus = PlaintextCorpusReader(c_path, ".*")
 filesids = corpus._fileids
+dictNgrams = {}
 for f in filesids:
     file_sentences = corpus.sents(f)
+    corpus_ngrams_perfile = []
     for sent in file_sentences:
         sent_words = preprocess_text(" ".join(sent))
         sent_n_grams = ngrams(sent_words, n)
         corpus_ngrams.append(list(sent_n_grams))
+        corpus_ngrams_perfile += [w for w in corpus_ngrams[-1]]
+
+    frq_dist_f = nltk.FreqDist(corpus_ngrams_perfile)
+    temp_dict = {" ".join(k): v for k, v in dict(frq_dist_f).items()}
+    temp_dict = collections.OrderedDict(sorted(temp_dict.items()))
+    dictNgrams[f] = temp_dict
 
 corpus_tokens = preprocess_text(corpus.raw())
-# corpus = word_tokenize(corpus)
-
+tiidf = pd.DataFrame(dictNgrams)
+tiidf = tiidf.sort_index()
+tiidf = tiidf.fillna(0)
 if typeofclass == 2:
     corpus_words = [c for w in corpus_tokens for c in w]
-corpus_tokens = set(corpus_tokens)
 corpus_ngrams = [t for tk in corpus_ngrams for t in tk if t != "Nan"]
-corpus_ngrams = set([" ".join(cn) for cn in corpus_ngrams])
-corpus_ngrams = [cn.split() for cn in corpus_ngrams]
 # %%
 frq_words = pd.DataFrame([" ".join(cn)
                          for cn in corpus_ngrams],
@@ -65,31 +75,18 @@ frq_words = pd.DataFrame([" ".join(cn)
 # for corpus_word in corpus_words:
 #     ngram_fd = nltk.FreqDist(ngrams(corpus, n))
 frq_words.set_index("token", inplace=True)
-print(frq_words)
-for f in filesids:
-    frq_words[f] = 0
-for crp_ng in corpus_ngrams:
-    index = " ".join(crp_ng)
-    for f in filesids:
-        f_sent = corpus.sents(f)
-        crp_gcount = 0
-        for sent in f_sent:
-            s_tokens = preprocess_text(" ".join(sent))
-            s_ngrams = ngrams(s_tokens, n)
-            ngrams_counts = Counter(s_ngrams)
-            crp_count = ngrams_counts.get(tuple(crp_ng))
-            if crp_count != None:
-                crp_gcount += crp_count
-
-        frq_words.at[index, f] = crp_gcount
+# %%
+for token, rows in frq_words.iterrows():
+    print(rows["corp1"])
 # %%
 frq_words.to_csv("ngrams.csv")
 # %%
 for f in filesids:
+    print(frq_words[f])
     tokens = {t[f]: i for i, t in frq_words.iterrows()}
     tokens = collections.OrderedDict(sorted(tokens.items(), reverse=True))
     # sortedx = collections.OrderedDict(sorted(tokens.items(), reverse=True))
-    x = [v for v in range(len(tokens.items()))]
+    x = sorted([v for v in range(len(tokens.items()))], reverse=True)
     y = [k for k, _ in tokens.items()]
     plt.plot(x, y)
     plt.xlabel("Words")
