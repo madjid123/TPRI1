@@ -62,25 +62,23 @@ for f in filesids:
     dictNgrams[f] = temp_dict
 
 corpus_tokens = preprocess_text(corpus.raw())
-tiidf = pd.DataFrame(dictNgrams)
-tiidf = tiidf.sort_index()
-tiidf = tiidf.fillna(0)
-if typeofclass == 2:
-    corpus_words = [c for w in corpus_tokens for c in w]
-corpus_ngrams = [t for tk in corpus_ngrams for t in tk if t != "Nan"]
+tf_idf = pd.DataFrame(dictNgrams)
+tf_idf = tf_idf.sort_index()
+tf_idf = tf_idf.fillna(0)
+# if typeofclass == 2:
+#     corpus_words = [c for w in corpus_tokens for c in w]
 # %%
-frq_words = pd.DataFrame([" ".join(cn)
-                         for cn in corpus_ngrams],
-                         columns=['token'])
-# for corpus_word in corpus_words:
-#     ngram_fd = nltk.FreqDist(ngrams(corpus, n))
-frq_words.set_index("token", inplace=True)
+
+
+def calc_tfidf(row):
+
+    # %%
+for label, rows in tf_idf.iterrows():
+    print(rows.mean())
 # %%
-for token, rows in frq_words.iterrows():
-    print(rows["corp1"])
+tf_idf.to_csv("ngrams.csv")
 # %%
-frq_words.to_csv("ngrams.csv")
-# %%
+# Plotting
 for f in filesids:
     print(frq_words[f])
     tokens = {t[f]: i for i, t in frq_words.iterrows()}
