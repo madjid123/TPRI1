@@ -1,3 +1,19 @@
-Despite its widespread lack of familiarity, AI is a technology that is transforming every walk of life. It is a wide-ranging tool that enables people to rethink how we integrate information, analyze data, and use the resulting insights to improve decisionmaking. Our hope through this comprehensive overview is to explain AI to an audience of policymakers, opinion leaders, and interested observers, and demonstrate how AI already is altering the world and raising important questions for society, the economy, and governance.
+Despite its widespread
+Despite its widespread  Despite its widespread  
+lack of familiarity, 
+technology is crucial
+technology is crucial
+technology is crucial, 
+accord research,
+accord research,
+accord research,
+accord research,
+AI is a technology that is transforming every walk of life.
+It is a wide-ranging tool that enables people to rethink how we integrate information
+, analyze data, and use the resulting insights to improve decisionmaking. 
+Our hope through this comprehensive overview is to explain AI to an audience of policymakers,
+opinion leaders, and interested observers, 
+and demonstrate how AI already is altering the world and raising important questions for society,
+the economy, and governance.
 
 In this paper, we discuss novel applications in finance, national security, health care, criminal justice, transportation, and smart cities, and address issues such as data access problems, algorithmic bias, AI ethics and transparency, and legal liability for AI decisions. We contrast the regulatory approaches of the U.S. and European Union, and close by making a number of recommendations for getting the most out of AI while still protecting important human values.
