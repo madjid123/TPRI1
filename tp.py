@@ -18,8 +18,8 @@ from nltk.corpus.reader.plaintext import PlaintextCorpusReader
 from collections import Counter
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+# %%
 # types of params
-
 typeofclass = 2
 lang = "ar"
 n = 2
@@ -42,7 +42,7 @@ else:
 stoplist = set(stopwords + list(punctuation))
 
 
-tfidfVec = TfidfVectorizer(ngram_range=(2, 2), input="filename")
+tfidfVec = TfidfVectorizer(ngram_range=(1, 1), input="filename")
 countVec = CountVectorizer(input="filename", ngram_range=(2, 2))
 retoken = RegexpTokenizer(r'\w+|\$[\d\.]+|\S+')
 pattern = re.compile(r'^([0-9]+\w*)')
@@ -62,10 +62,9 @@ def preprocess_text(text: str):
         and
         pattern.match(token) == None
     ]
+    tokens = [stemer.stem(w) for w in tokens]
     if typeofclass == 2:
         tokens = [c for w in tokens for c in w]
-    else:
-        tokens = [stemer.stem(w) for w in tokens]
     return tokens
 
 
