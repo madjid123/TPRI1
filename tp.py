@@ -20,9 +20,9 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 # %%
 # types of params
-typeofclass = 2
-lang = "ar"
-n = 2
+typeofclass = 1
+lang = "en"
+n = 1
 c_path = "./corpora"
 c_path = os.path.abspath(c_path)
 # typeofclass = int(
@@ -43,7 +43,6 @@ stoplist = set(stopwords + list(punctuation))
 
 
 tfidfVec = TfidfVectorizer(ngram_range=(1, 1), input="filename")
-countVec = CountVectorizer(input="filename", ngram_range=(2, 2))
 retoken = RegexpTokenizer(r'\w+|\$[\d\.]+|\S+')
 pattern = re.compile(r'^([0-9]+\w*)')
 if lang == "ar":
@@ -89,9 +88,7 @@ for f in filesids:
 print([" ".join(tp) for l in corpus_ngrams for tp in l])
 fids = [c_path + "/" + f for f in filesids]
 countVec = tfidfVec.fit_transform(fids)
-tfidfVec.get_feature_names_out()
 
-print(countVec.max())
 corpus_tokens = preprocess_text(corpus.raw())
 tf_idf = pd.DataFrame(dictNgrams)
 tf_idf = tf_idf.sort_index()
@@ -99,17 +96,16 @@ tf_idf = tf_idf.fillna(0)
 # %%
 
 # tf_idf.apply(lambda x : print(len([w for w in x[:] if w == 0])),axis=1)
-tf_idf.apply(lambda x: print(len(x)), axis=1)
+tf_idf.to_csv("ngrams.csv")
 # %%
 tf_idf["idf"] = tf_idf.apply(lambda row: math.log10(
     len(row)/(len(row)-len([w for w in row if w == 0]))), axis=1)
 for f in filesids:
-    tf_idf["tf.idf"+f] = (1 + np.log10(tf_idf[f]))*tf_idf["idf"]
+    tf_idf[f] = (1 + np.log10(tf_idf[f]))*tf_idf["idf"]
 tf_idf = tf_idf.replace([np.inf, -np.inf], 0)
 print(tf_idf)
 # %%
-# %%
-tf_idf.to_csv("ngrams.csv")
+tf_idf.to_csv("tf_idf.csv")
 # %%
 # Plotting
 for f in filesids:
